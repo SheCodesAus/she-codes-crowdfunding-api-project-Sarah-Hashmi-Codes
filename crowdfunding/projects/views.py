@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .models import Project, Pledge
 from .serializers import ProjectSerializer, ProjectDetailSerializer, PledgeSerializer
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics
 
 class ProjectList(APIView):
     def get(self, request):
@@ -14,7 +14,7 @@ class ProjectList(APIView):
     def post(self, request):
         serializer = ProjectSerializer(data=request.data) #use the data that user has given
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
@@ -37,22 +37,31 @@ class ProjectDetail(APIView):
         return Response(serializer.data)
 
 
-class PledgeList(APIView):
-    def get(self, request):
-        pledges = Pledge.objects.all()
-        serializer = PledgeSerializer(pledges, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = PledgeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
+# class PledgeList(APIView):
+#     def get(self, request):
+#         pledges = Pledge.objects.all()
+#         serializer = PledgeSerializer(pledges, many=True)
+#         return Response(serializer.data)
 
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    # def post(self, request):
+    #     serializer = PledgeSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(
+    #             serializer.data,
+    #             status=status.HTTP_201_CREATED
+    #         )
+
+    #     return Response(
+    #         serializer.errors,
+    #         status=status.HTTP_400_BAD_REQUEST
+    #     )
+
+
+class PledgeList(generics.ListCreateAPIView):
+    queryset = Pledge.objects.all()
+    serializer_class = PledgeSerializer
+
+    def perform_create(self,serializer):
+        serializer.save(supporter=self.request.user)
+    

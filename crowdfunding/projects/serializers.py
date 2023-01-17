@@ -2,13 +2,19 @@ from rest_framework import serializers
 from .models import Project,Pledge, CATEGORIES
 
 
-class PledgeSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
-    amount = serializers.DecimalField(max_digits=20, decimal_places=2)
-    comment = serializers.CharField(max_length=200)
-    anonymous = serializers.BooleanField()
-    supporter = serializers.CharField(max_length=200)
-    project_id = serializers.IntegerField()
+# class PledgeSerializer(serializers.Serializer):
+    # id = serializers.ReadOnlyField()
+    # amount = serializers.DecimalField(max_digits=20, decimal_places=2)
+    # comment = serializers.CharField(max_length=200)
+    # anonymous = serializers.BooleanField()
+    # supporter = serializers.CharField(max_length=200)
+    # project_id = serializers.IntegerField()
+    
+class PledgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pledge
+        fields = ['id', 'amount', 'comment', 'anonymous', 'project', 'supporter']
+        read_only_fields = ['id', 'supporter']
 
     def create(self, validated_data):
         return Pledge.objects.create(**validated_data)
@@ -24,7 +30,7 @@ class ProjectSerializer(serializers.Serializer):
     image = serializers.URLField()
     is_open = serializers.BooleanField()
     date_created = serializers.DateTimeField(read_only=True)
-    owner = serializers.CharField(max_length=200)
+    owner = serializers.ReadOnlyField(source="owner.id")
     category = serializers.ChoiceField(CATEGORIES)
     
 

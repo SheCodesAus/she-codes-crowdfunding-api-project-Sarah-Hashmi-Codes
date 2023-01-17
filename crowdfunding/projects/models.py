@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 CATEGORIES =(
         ("Health", "Health"),
@@ -13,7 +16,12 @@ class Project(models.Model):
     image=models.URLField()
     is_open=models.BooleanField()
     date_created=models.DateTimeField(auto_now_add=True) #whenever project is created date will be recorded 
-    owner=models.CharField(max_length=200) #we have to change it to FK in future so he can be able to start a project
+    owner=models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="owner_projects"
+
+    ) #we have to change it to FK in future so he can be able to start a project
     category = models.CharField(max_length=200, null=True, choices= CATEGORIES )
 
 class Pledge(models.Model):
@@ -25,5 +33,9 @@ class Pledge(models.Model):
         on_delete=models.CASCADE,         #when project is cancelled all pledges will be cancelled too.
         related_name='pledges'
     )
-    supporter = models.CharField(max_length=200)
+    supporter = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='supporter_pledges'
+    )
 
