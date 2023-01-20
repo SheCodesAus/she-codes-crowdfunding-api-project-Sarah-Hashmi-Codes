@@ -16,8 +16,11 @@ class PledgeSerializer(serializers.ModelSerializer):
         fields = ['id', 'amount', 'comment', 'anonymous', 'project', 'supporter']
         read_only_fields = ['id', 'supporter']
 
-    def create(self, validated_data):
+    def create(self, validated_data):          
+        
         return Pledge.objects.create(**validated_data)
+
+    
 
 # class CategorySerializer(serializers.Serializer):
 #     title = serializers.CharField(max_length=100)
@@ -34,8 +37,9 @@ class ProjectSerializer(serializers.Serializer):
     category = serializers.ChoiceField(CATEGORIES)
     
 
-    def create(self,validated_data):    #method to create instance
+    def create(self,validated_data):    #method to creates and returns a new "Project", given the validated data.
         return Project.objects.create(**validated_data)
+    
 
 class ProjectDetailSerializer(ProjectSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)

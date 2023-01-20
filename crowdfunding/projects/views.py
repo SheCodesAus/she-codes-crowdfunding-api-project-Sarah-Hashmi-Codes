@@ -7,8 +7,8 @@ from rest_framework import status, generics
 
 class ProjectList(APIView):
     def get(self, request):
-        projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
+        projects = Project.objects.all()     #Query the database for all projects
+        serializer = ProjectSerializer(projects, many=True) # Pass that database queryset into the serializer we just created, so that it gets converted into JSON and rendered.
         return Response(serializer.data)
 
     def post(self, request):
@@ -35,6 +35,19 @@ class ProjectDetail(APIView):
         project = self.get_object(pk)
         serializer = ProjectDetailSerializer(project)
         return Response(serializer.data)
+
+    def put(self, request, pk):
+        project = self.get_object(pk)
+        serializer = ProjectDetailSerializer(project, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        project = self.get_object(pk)
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # class PledgeList(APIView):
