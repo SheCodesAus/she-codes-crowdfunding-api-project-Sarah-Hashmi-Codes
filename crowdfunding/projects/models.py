@@ -5,10 +5,18 @@ User = get_user_model()
 
 CATEGORIES =(
         ("Health", "Health"),
-        ('Disaster Relief','Disaster Releif'), 
+        ('Disaster Relief','Disaster Relief'), 
         ('Education',"Education")
     )
     
+# class ProjectImages(models.Model):
+#     project=models.ForeignKey(
+#         'Project', 
+#         on_delete=models.CASCADE, 
+#         related_name='images')
+#     images = models.FileField(upload_to='images',max_length=100,null=True)
+
+
 class Project(models.Model):
     title=models.CharField(max_length=200)
     description=models.TextField()
@@ -20,9 +28,12 @@ class Project(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name="owner_projects"
-
-    ) #we have to change it to FK in future so he can be able to start a project
+     )
     category = models.CharField(max_length=200, null=True, choices= CATEGORIES )
+
+    @property
+    def pledged(self):
+        return self.pledges.aggregate(sum=models.Sum('amount'))['sum']
 
 class Pledge(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=2)

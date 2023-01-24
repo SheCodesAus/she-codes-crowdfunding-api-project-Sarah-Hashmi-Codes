@@ -8,6 +8,9 @@ from .permissions import IsOwnerOrReadOnly
 
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # search_fields = ['category']
+    # filter_backends = (filters,SearchFilter,)
+
     def get(self, request):
         projects = Project.objects.all()     #Query the database for all projects
         serializer = ProjectSerializer(projects, many=True) # Pass that database queryset into the serializer we just created, so that it gets converted into JSON and rendered.
@@ -46,8 +49,8 @@ class ProjectDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        project = self.get_object(pk)
-        data = request.data
+        project = self.get_object(pk) #tells me which project we want to change
+        data = request.data  #modification that the user is making
         serializer = ProjectDetailSerializer(
             instance=project,
             data=data,
