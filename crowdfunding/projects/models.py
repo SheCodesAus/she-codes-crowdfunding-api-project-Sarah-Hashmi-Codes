@@ -20,7 +20,7 @@ CATEGORIES =(
 class Project(models.Model):
     title=models.CharField(max_length=200)
     description=models.TextField()
-    goal=models.IntegerField() #use float for money
+    goal=models.FloatField() #use float for money
     image=models.URLField()
     is_open=models.BooleanField()
     date_created=models.DateTimeField(auto_now_add=True) #whenever project is created date will be recorded 
