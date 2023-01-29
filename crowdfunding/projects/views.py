@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Project, Pledge
-from .serializers import ProjectSerializer, ProjectDetailSerializer, PledgeSerializer
+from .serializers import ProjectSerializer, ProjectDetailSerializer, PledgeSerializer,PledgeDetailSerializer
 from django.http import Http404
 from rest_framework import status, generics, permissions
 from .permissions import IsOwnerOrReadOnly
@@ -118,13 +118,54 @@ class PledgeList(generics.ListCreateAPIView):
         serializer.save(supporter=self.request.user)
 
 
-class PledgeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Pledge.objects.all()
-    serializer_class = PledgeSerializer
-    permission_classes = [                             
+# class PledgeDetail(generics.RetrieveUpdateDestroyAPIView):
+   
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly
+#     ]
+
+#     # def get_object(self, pk):       
+#     #     try:                #only get the object
+#     #         pledge = Pledge.objects.get(pk=pk)
+#     #         self.check_object_permissions(self.request, pledge)
+#     #         return pledge
+#     #     except Pledge.DoesNotExist:
+#     #         raise Http404
+
+#     queryset = Pledge.objects.all()
+    # serializer_class = PledgeDetailSerializer
+
+    # def get_object(self):
+    #     return self.request.user
+
+class PledgeDetail(APIView):
+    permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly
     ]
 
+    def get_object(self, pk):       
+        try:                #only get the object
+            pledge = Pledge.objects.get(pk=pk)
+            self.check_object_permissions(self.request, pledge)
+            return pledge
+        except Pledge.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):                     # go in the project
+        pledge = self.get_object(pk)
+        serializer = PledgeDetailSerializer(pledge)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        pledge = self.get_object(pk) #tells me which project we want to change
+        data = request.data  #modification that the user is making
+        serializer = PledgeDetailSerializer(
+            instance=pledge,
+            data=data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
         
