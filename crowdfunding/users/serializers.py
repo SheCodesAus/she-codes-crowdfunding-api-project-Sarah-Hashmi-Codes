@@ -9,4 +9,5 @@ class CustomerUserSerializer(serializers.Serializer):
     # bio = serializers.CharField()
 
     def create(self, validated_data):
-        return CustomUser.objects.create_user(**validated_data)  #accept the password and won't save it but creata # about it. password is scrambled so its illegible.
+        return CustomUser.objects.create_user(**validated_data)  
+#accept the password and won't save it but creata # about it. password is scrambled so its illegible.

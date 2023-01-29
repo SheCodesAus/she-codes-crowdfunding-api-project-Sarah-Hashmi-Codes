@@ -8,6 +8,8 @@ CATEGORIES =(
         ('Disaster Relief','Disaster Relief'), 
         ('Education',"Education")
     )
+
+    # ("database","frontend")
     
 # class ProjectImages(models.Model):
 #     project=models.ForeignKey(
@@ -32,8 +34,15 @@ class Project(models.Model):
     category = models.CharField(max_length=200, null=True, choices= CATEGORIES )
 
     @property
-    def pledged(self):
+    def raised(self):
         return self.pledges.aggregate(sum=models.Sum('amount'))['sum']
+
+# class ProjectFilter(filters.FilterSet):
+#     name = filters.CharFilter(lookup_expr='iexact')
+
+#     class Meta:
+#         model = Project
+#         fields = ['category', 'is_open']
 
 class Pledge(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=2)

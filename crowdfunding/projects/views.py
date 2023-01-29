@@ -6,13 +6,32 @@ from django.http import Http404
 from rest_framework import status, generics, permissions
 from .permissions import IsOwnerOrReadOnly
 
+
+
+
+# class ProjectList(generics.ListAPIView):
+#     projects = Project.objects.all()
+#     serializer_class = ProjectSerializer
+#     filter_fields = ('category', 'is_open')
+#     filter_backends = (filters.SearchFilter,)
+#     search_fields = ('category', 'owner')
+
+#     permission_classes = [
+#         permissions.IsAuthenticatedOrReadOnly
+#     ]
+
+#     def perform_create(self,serializer):
+#         serializer.save(supporter=self.request.user)
+
 class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    # search_fields = ['category']
-    # filter_backends = (filters,SearchFilter,)
 
     def get(self, request):
         projects = Project.objects.all()     #Query the database for all projects
+        if request.data.get("category"):
+            projects = projects.filter(category=request.data.get("category"))
+        if request.data.get("owner"):
+            projects = projects.filter(owner=request.data.get("owner"))
         serializer = ProjectSerializer(projects, many=True) # Pass that database queryset into the serializer we just created, so that it gets converted into JSON and rendered.
         return Response(serializer.data)
 
@@ -91,7 +110,21 @@ class ProjectDetail(APIView):
 class PledgeList(generics.ListCreateAPIView):
     queryset = Pledge.objects.all()
     serializer_class = PledgeSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
 
     def perform_create(self,serializer):
         serializer.save(supporter=self.request.user)
+
+
+class PledgeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Pledge.objects.all()
+    serializer_class = PledgeSerializer
+    permission_classes = [                             
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+    ]
+
     
+        

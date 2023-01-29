@@ -20,6 +20,12 @@ class PledgeSerializer(serializers.ModelSerializer):
         
         return Pledge.objects.create(**validated_data)
 
+class PledgeDetailSerializer(PledgeSerializer):
+    def update(self, instance, validated_data):
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.save()
+        return instance
+
     
 
 # class CategorySerializer(serializers.Serializer):
@@ -35,7 +41,7 @@ class ProjectSerializer(serializers.Serializer):
     date_created = serializers.DateTimeField(read_only=True)
     owner = serializers.ReadOnlyField(source="owner.id")
     category = serializers.ChoiceField(CATEGORIES)
-    pledged = serializers.ReadOnlyField()
+    raised = serializers.ReadOnlyField()
     
 
     def create(self,validated_data):    #method to creates and returns a new "Project", given the validated data.
