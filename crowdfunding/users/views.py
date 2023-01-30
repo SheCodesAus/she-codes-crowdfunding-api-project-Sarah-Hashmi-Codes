@@ -5,6 +5,8 @@ from rest_framework import status, permissions
 from .models import CustomUser
 from .serializers import CustomUserSerializer,CustomUserDetailSerializer
 from .permissions import IsOwnerOrReadOnly
+
+
 class CustomUserList(APIView):
 
     def get(self, request):
@@ -16,8 +18,11 @@ class CustomUserList(APIView):
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+            return Response(serializer.data,
+            status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST)
 
 class CustomUserDetail(APIView):
     permission_classes = [

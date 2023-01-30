@@ -5,7 +5,6 @@ from django.db import models
 class CustomUser(AbstractUser):
     profile_image = models.URLField(default="https://via.placeholder.com/150", max_length=200)
     is_active = models.BooleanField(default=True)
-    email = models.EmailField(unique=True)
 
     # bio= models.TextField()
     
