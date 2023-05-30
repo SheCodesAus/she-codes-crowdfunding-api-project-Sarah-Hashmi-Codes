@@ -28,8 +28,8 @@ class ProjectList(APIView):
 
     def get(self, request):
         projects = Project.objects.all()     #Query the database for all projects
-        # if request.data.get("category"):
-        #     projects = projects.filter(category=request.data.get("category"))
+        if request.data.get("category"):
+            projects = projects.filter(category=request.data.get("category"))
         if request.data.get("owner"):
             projects = projects.filter(owner=request.data.get("owner"))
         serializer = ProjectSerializer(projects, many=True) # Pass that database queryset into the serializer we just created, so that it gets converted into JSON and rendered.
