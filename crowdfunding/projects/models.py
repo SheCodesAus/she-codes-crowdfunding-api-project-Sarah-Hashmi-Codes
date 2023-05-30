@@ -32,6 +32,8 @@ class Project(models.Model):
         related_name="owner_projects"
      )
     category = models.CharField(max_length=200, null=True, choices= CATEGORIES )
+   
+
 
     @property
     def raised(self):
@@ -45,7 +47,7 @@ class Project(models.Model):
 #         fields = ['category', 'is_open']
 
 class Pledge(models.Model):
-    amount = models.DecimalField(max_digits=20, decimal_places=2)
+    amount = models.FloatField()
     comment = models.CharField(max_length=200)
     anonymous = models.BooleanField()
     project = models.ForeignKey(
@@ -58,4 +60,3 @@ class Pledge(models.Model):
         on_delete=models.CASCADE,
         related_name='supporter_pledges'
     )
-

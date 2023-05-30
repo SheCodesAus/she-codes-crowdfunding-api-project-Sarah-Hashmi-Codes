@@ -27,13 +27,16 @@ class ProjectList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        projects = Project.objects.all()     #Query the database for all projects
+        # ordered_querset = sorted(Project.objects.all(), key=lambda p: p.raised)
+        projects = Project.objects.all() #Query the database for all projects
         if request.data.get("category"):
             projects = projects.filter(category=request.data.get("category"))
         if request.data.get("owner"):
             projects = projects.filter(owner=request.data.get("owner"))
         serializer = ProjectSerializer(projects, many=True) # Pass that database queryset into the serializer we just created, so that it gets converted into JSON and rendered.
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
     def post(self, request):
         serializer = ProjectSerializer(data=request.data) #use the data that user has given

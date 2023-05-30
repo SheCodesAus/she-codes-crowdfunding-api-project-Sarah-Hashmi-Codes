@@ -1,9 +1,18 @@
 from rest_framework import serializers
 from .models import CustomUser
+from rest_framework.validators import UniqueValidator
+
 
 class CustomUserSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
-    username = serializers.CharField(max_length=200)
+    username = serializers.CharField(max_length=50, validators=[
+        UniqueValidator(
+            queryset=CustomUser.objects.all(),
+            message=("Name already exists")
+        )
+    ]
+)
+        
     email = serializers.EmailField()
     password = serializers.CharField(write_only = True)
     first_name = serializers.CharField(max_length=150)

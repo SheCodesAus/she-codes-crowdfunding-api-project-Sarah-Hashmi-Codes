@@ -20,6 +20,7 @@ class PledgeSerializer(serializers.ModelSerializer):
         
         return Pledge.objects.create(**validated_data)
 
+
 class PledgeDetailSerializer(PledgeSerializer):
     def update(self, instance, validated_data):
         instance.comment = validated_data.get('comment', instance.comment)
@@ -47,6 +48,12 @@ class ProjectSerializer(serializers.Serializer):
     def create(self,validated_data):    #method to creates and returns a new "Project", given the validated data.
         return Project.objects.create(**validated_data)
     
+    # pledges = serializers.SerializerMethodField('get_pledges')
+
+    # def get_pledges(selfself, obj):
+    #     qset = Pledge.objects.filter(pledge__pk=obj.pk).order_by('amount')
+    #     return PledgeSerializer(qset, many=True, read_only=True).data
+
 
 class ProjectDetailSerializer(ProjectSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)
